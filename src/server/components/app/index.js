@@ -1,26 +1,25 @@
 'use strict';
 
 import http from 'http';
-// import configure from './configure';
-
-// console.log('configure', configure)
-// export { configure };
 
 export function configure(config) {
     console.log('configure', config);
 
+    this.getConfig = () => config;
     this.run = run;
 
     return this;
 }
 
 function run(file) {
+    const config = this.getConfig();
+    
     http.createServer((req, res) => {
-        res.writeHead(200, {'Content-Type': 'text/plain'});
-        res.end('Hello World\n');
-    }).listen(1337, '127.0.0.1');
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end('{"message": "API"}');
+    }).listen(config.port, config.address);
 
-    console.log('Server running at http://127.0.0.1:1337/');
+    console.log('Server running at http://' + config.address + ':' + config.port + '/');
 }
 
 function readJsonFile(file) {
