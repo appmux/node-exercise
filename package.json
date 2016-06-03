@@ -4,9 +4,9 @@
   "description": "Node.js exercise",
   "main": "src/server.js",
   "scripts": {
-    "start": "nodemon src/server.js --exec babel-node --presets es2015,stage-2",
+    "start": "nodemon src/server/index.js --exec babel-node --presets es2015,stage-2",
     "build": "babel src -d dist --presets es2015,stage-2",
-    "serve": "node dist/server.js",
+    "serve": "node dist/server/index.js",
     "test": "mocha --compilers js:babel-register"
   },
   "repository": {

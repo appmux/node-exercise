@@ -1,0 +1,4 @@
+{
+    "basePath": "api/",
+    "storePath": "./tmp/store.json"
+}
