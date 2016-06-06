@@ -2,5 +2,9 @@
     "address": "127.0.0.1",
     "port": 8090,
     "basePath": "api/",
-    "storePath": "./tmp/store.json"
+    "modulesDir": "../../modules",
+    "storePath": "./tmp/store.json",
+    "modules": [
+        "auth"
+    ]
 }
