@@ -2,9 +2,15 @@
     "address": "127.0.0.1",
     "port": 8090,
     "basePath": "api/",
+    "componentsDir": "../../components",
     "modulesDir": "../../modules",
-    "storePath": "./tmp/store.json",
+    "REM_storePath": "./tmp/store.json",
+    "components": [
+        "store"
+    ],
     "modules": [
-        "auth"
+        "core",
+        "auth",
+        "configurations"
     ]
 }
