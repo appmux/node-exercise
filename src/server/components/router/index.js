@@ -1,25 +1,44 @@
 'use strict';
 
+import { _extend as extend } from 'util';
+
+let routes = [];
+
+export function configure(config) {
+    if (Array.isArray(config)) {
+        config.map(route => {
+            route._urlParams = route.url.match(/:[^\/]+/g) || [];
+            route._urlRegex = new RegExp(route.url
+                .replace(/:[^\/]+/g, '(.*?)')
+                .replace(/\//g, '\\/'));
+        });
+
+        routes = routes.concat(config);
+    }
+}
+
 export function match(req) {
-
-    let routes = [
-        {
-            url: '/auth',
-            module: 'auth',
-            action: 'token',
-            headers: {'Content-Type': 'application/json'},
-            data: {
-                test: 'some data'
+    let params = {},
+        matched = routes.find((route) => {
+            if (req.url === route.url) {
+                return true;
             }
-        }
-    ];
 
-    console.log('route match', req.url);
+            let reMatch = req.url.match(route._urlRegex);
 
-    let matched;
+            if (reMatch) {
+                params = route._urlParams.reduce((params, param, i) => {
+                    params[param.substring(1)] = reMatch[i + 1];
+                    return params;
+                }, {});
 
-    if (req.url === '/') {
-        matched = routes[0];
+                return true;
+            }
+        });
+
+    if (matched) {
+        matched = extend({}, matched);
+        matched.params = params;
     }
 
     return matched;

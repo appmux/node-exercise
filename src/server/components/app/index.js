@@ -4,8 +4,6 @@ import http from 'http';
 import * as router from '../router';
 
 export function configure(config) {
-    console.log('configure', config);
-
     this.getConfig = () => config;
     this.run = run;
 
@@ -15,7 +13,6 @@ export function configure(config) {
 function run(file) {
     const config = this.getConfig();
     let modules = loadModules(config);
-    console.log('modules', modules);
 
     http.createServer((req, res) => {
         let matchedRoute = router.match(req);
@@ -24,8 +21,12 @@ function run(file) {
             let module = modules[matchedRoute.module];
             let action = matchedRoute.action + 'Action';
 
+            req.params = matchedRoute.params;
+
+            let result = module[action](req, res);
+
             res.writeHead(matchedRoute.status || 200, matchedRoute.headers);
-            res.end(module[action]());
+            res.end(result);
         } else {
             res.writeHead(404);
             res.end();
@@ -41,6 +42,7 @@ function loadModules(config) {
 
     (config.modules || []).map((module) => {
         modules[module] = require(config.modulesDir + '/' + module);
+        router.configure(modules[module].getRoutes());
     });
 
     return modules;
