@@ -1,16 +1,20 @@
 {
     "address": "127.0.0.1",
     "port": 8090,
-    "basePath": "api/",
-    "componentsDir": "../../components",
-    "modulesDir": "../../modules",
-    "REM_storePath": "./tmp/store.json",
-    "components": [
-        "store"
-    ],
+    "basePath": "/api",
+    "modulesDir": "./../../modules",
     "modules": [
+        "store",
         "core",
         "auth",
         "configurations"
-    ]
+    ],
+    "defaults": {
+        "response": {
+            "status": 400,
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    }
 }

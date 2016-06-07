@@ -2,31 +2,49 @@
 
 import { _extend as extend } from 'util';
 
-let routes = [];
-
 export function configure(config) {
-    if (Array.isArray(config)) {
-        config.map(route => {
+    this.basePath = config.basePath || '';
+    this.routes = [];
+    
+    this.addRoutes = addRoutes;
+    this.match = match;
+    
+    return this;
+}
+
+function addRoutes(routes) {
+    if (Array.isArray(routes)) {
+        routes.map(route => {
             route._urlParams = route.url.match(/:[^\/]+/g) || [];
-            route._urlRegex = new RegExp(route.url
+            route._urlRegex = new RegExp('^' + route.url
                 .replace(/:[^\/]+/g, '(.*?)')
-                .replace(/\//g, '\\/'));
+                .replace(/\//g, '\\/') + '$');
         });
 
-        routes = routes.concat(config);
+        this.routes = this.routes.concat(routes);
     }
 }
 
-export function match(req) {
+function match(req) {
+    const i = req.url.indexOf(this.basePath);
+    
+    if (i !== 0) {
+        return;
+    }
+    
+    const url = req.url.substr(this.basePath.length);
+
     let params = {},
-        matched = routes.find((route) => {
-            if (req.url === route.url) {
+        matched = this.routes.find((route) => {
+            const method = route.method || 'GET';
+
+            if (url === route.url && method === req.method) {
                 return true;
             }
 
-            let reMatch = req.url.match(route._urlRegex);
+            let reMatch = url.match(route._urlRegex);
 
-            if (reMatch) {
+            if (reMatch && method === req.method) { // && method === ''
                 params = route._urlParams.reduce((params, param, i) => {
                     params[param.substring(1)] = reMatch[i + 1];
                     return params;

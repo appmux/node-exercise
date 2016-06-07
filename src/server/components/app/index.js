@@ -1,79 +1,76 @@
 'use strict';
 
 import http from 'http';
+import { _extend as extend } from 'util';
 import * as dispatcher from './dispatcher';
 import * as router from './router';
 import * as serviceManager from './serviceManager';
 
 export function configure(config) {
     this.config = config;
+    this.router = router.configure(config);
+    
     this.run = run;
+    this.loadModules = loadModules;
 
     return this;
 }
 
-function run(file) {
-    const config = this.config;
-
-    serviceManager.register('config', config);
+function run() {
+    serviceManager.register('appConfig', this.config);
     serviceManager.register('dispatcher', dispatcher);
 
-    loadComponents(config);
-    let modules = loadModules(config);
+    this.loadModules();
 
     http.createServer((req, res) => {
-        let matchedRoute = router.match(req);
-
-        dispatcher.dispatch('onRoute', req, res, matchedRoute);
+        let matchedRoute = this.router.match(req);
+        let result = '';
+        let status = this.config.defaults.response.status;
+        let headers = extend({
+            'Content-Type': 'text/plain'
+        }, this.config.defaults.response.headers);
 
         if (typeof matchedRoute !== 'undefined') {
-            let module = modules[matchedRoute.module];
+            dispatcher.dispatch('onRoute', req, res, matchedRoute);
+
+            let module = serviceManager.get(matchedRoute.module);
             let action = matchedRoute.action + 'Action';
 
             req.params = matchedRoute.params;
 
-            let result = module[action](req, res);
+            if (typeof module[action] === 'function') {
+                result = module[action](req, res);
+            }
 
-            res.writeHead(matchedRoute.status || 200, matchedRoute.headers);
-            res.end(result);
-        } else {
-            res.writeHead(404);
-            res.end();
+            status = 200;
+            headers = extend(headers, matchedRoute.headers || {});
         }
 
-    }).listen(config.port, config.address);
+        res.writeHead(status, headers);
+        res.end(result);
 
-    console.log('Server running at http://' + config.address + ':' + config.port + '/');
+    }).listen(this.config.port, this.config.address);
+
+    console.log('Server running at http://' + this.config.address + ':' + this.config.port + '/');
 }
 
-function loadComponents(config) {
-    (config.components || []).map((name) => {
-        let component = require((config.componentsDir || '.') + '/' + name);
+function loadModules() {
+    let modules = Array.isArray(this.config.modules) ? this.config.modules : [];
 
-        if (typeof component.factory === 'function') {
-            component.factory(serviceManager);
-        }
-
-        serviceManager.register(name, component);
-    });
-}
-
-function loadModules(config) {
-    let modules = {};
-
-    (config.modules || []).map((name) => {
-        let module = require((config.modulesDir || '.') + '/' + name);
+    modules.map((name) => {
+        let module = require((this.config.modulesDir || '.') + '/' + name);
 
         if (typeof module.getRoutes === 'function') {
-            router.configure(module.getRoutes());
+            this.router.addRoutes(module.getRoutes().map(route => {
+                route.module = name;
+                return route;
+            }));
         }
 
         if (typeof module.factory === 'function') {
             module = module.factory(serviceManager);
         }
 
-        modules[name] = module;
+        serviceManager.register(name, module);
     });
-
-    return modules;
 }
