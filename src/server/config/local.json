@@ -2,7 +2,7 @@
     "address": "127.0.0.1",
     "port": 8090,
     "basePath": "/api",
-    "modulesDir": "./../../modules",
+    "modulesDir": "./../modules",
     "modules": [
         "store",
         "core",
