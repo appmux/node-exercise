@@ -1,21 +1,30 @@
 'use strict';
 
 import http from 'http';
-import * as router from '../router';
+import * as dispatcher from './dispatcher';
+import * as router from './router';
+import * as serviceManager from './serviceManager';
 
 export function configure(config) {
-    this.getConfig = () => config;
+    this.config = config;
     this.run = run;
 
     return this;
 }
 
 function run(file) {
-    const config = this.getConfig();
+    const config = this.config;
+
+    serviceManager.register('config', config);
+    serviceManager.register('dispatcher', dispatcher);
+
+    loadComponents(config);
     let modules = loadModules(config);
 
     http.createServer((req, res) => {
         let matchedRoute = router.match(req);
+
+        dispatcher.dispatch('onRoute', req, res, matchedRoute);
 
         if (typeof matchedRoute !== 'undefined') {
             let module = modules[matchedRoute.module];
@@ -37,12 +46,33 @@ function run(file) {
     console.log('Server running at http://' + config.address + ':' + config.port + '/');
 }
 
+function loadComponents(config) {
+    (config.components || []).map((name) => {
+        let component = require((config.componentsDir || '.') + '/' + name);
+
+        if (typeof component.factory === 'function') {
+            component.factory(serviceManager);
+        }
+
+        serviceManager.register(name, component);
+    });
+}
+
 function loadModules(config) {
     let modules = {};
 
-    (config.modules || []).map((module) => {
-        modules[module] = require(config.modulesDir + '/' + module);
-        router.configure(modules[module].getRoutes());
+    (config.modules || []).map((name) => {
+        let module = require((config.modulesDir || '.') + '/' + name);
+
+        if (typeof module.getRoutes === 'function') {
+            router.configure(module.getRoutes());
+        }
+
+        if (typeof module.factory === 'function') {
+            module = module.factory(serviceManager);
+        }
+
+        modules[name] = module;
     });
 
     return modules;
