@@ -9,7 +9,7 @@ export default function getRoutes() {
             }
         },
         {
-            url: '/configurations/:host',
+            url: '/configurations/:name',
             action: 'details',
             data: {
                 authenticate: true
@@ -24,7 +24,7 @@ export default function getRoutes() {
             }
         },
         {
-            url: '/configurations/:host',
+            url: '/configurations/:name',
             method: 'PUT',
             action: 'update',
             data: {
@@ -32,7 +32,7 @@ export default function getRoutes() {
             }
         },
         {
-            url: '/configurations/:host',
+            url: '/configurations/:name',
             method: 'DELETE',
             action: 'delete',
             data: {

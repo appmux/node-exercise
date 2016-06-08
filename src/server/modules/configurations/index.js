@@ -71,7 +71,7 @@ function indexAction(req, res) {
         links.prevPage = url.format(linksUrl);
     }
 
-    this.result = JSON.stringify(extend(
+    res.body = JSON.stringify(extend(
         {
             links: links,
             pager: pager
@@ -80,32 +80,31 @@ function indexAction(req, res) {
     ));
 }
 
-function detailsAction(req) {
+function detailsAction(req, res) {
     let configs = extend([], this.store.get('configurations') || []);
-    let config = configs.find(config => config.name == req.params.host);
+    let config = configs.find(config => config.name == req.params.name);
 
     if (!config) {
-        this.result = undefined;
-        this.status = 404;
+        res.statusCode = 404;
     } else {
-        this.result = JSON.stringify(config);
+        res.body = JSON.stringify(config);
     }
 }
 
-function createAction(req) {
+function createAction(req, res) {
     console.log('createAction');
 }
 
-function updateAction(req) {
+function updateAction(req, res) {
     console.log('updateAction');
 }
 
-function deleteAction(req) {
+function deleteAction(req, res) {
     let configs = extend([], this.store.get('configurations') || []);
     let deleteIndex;
     
     configs.find((config, i) => {
-        if (config.name == req.params.host) {
+        if (config.name == req.params.name) {
             deleteIndex = i;
         }
 
@@ -113,13 +112,11 @@ function deleteAction(req) {
     });
     
     if (!deleteIndex) {
-        this.status = 404;
+        res.statusCode = 404;
     } else {
         configs.splice(deleteIndex, 1);
         this.store.set('configurations', configs);
     }
-
-    this.result = undefined;
 }
 
 function sortConfigsBy(key, order) {
