@@ -5,9 +5,8 @@ import { _extend as extend } from 'util';
 export { getRoutes };
 
 export function factory(sm) {
-    console.log('configs sm', sm);
     this.store = sm.get('store');
-    this.configs = this.store.get('configurations');
+    this.configs = this.store.get('configurations') || [];
 
     this.indexAction = indexAction;
     this.detailsAction = detailsAction;
