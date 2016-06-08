@@ -35,7 +35,7 @@ function indexAction(req, res) {
     let pager = {
         total: pages,
         current: page,
-        next: page + 2 < pages ? page + 2: undefined,
+        next: page + 2 <= pages ? page + 2: undefined,
         previous: page > 0 ? page : undefined
     };
 
@@ -82,9 +82,7 @@ function indexAction(req, res) {
 
 function detailsAction(req) {
     let configs = extend([], this.store.get('configurations') || []);
-    let config = configs.find(config => {
-        return config.name == req.params.host;
-    });
+    let config = configs.find(config => config.name == req.params.host);
 
     if (!config) {
         this.result = undefined;
@@ -103,7 +101,25 @@ function updateAction(req) {
 }
 
 function deleteAction(req) {
-    console.log('deleteAction');
+    let configs = extend([], this.store.get('configurations') || []);
+    let deleteIndex;
+    
+    configs.find((config, i) => {
+        if (config.name == req.params.host) {
+            deleteIndex = i;
+        }
+
+        return deleteIndex >= 0;
+    });
+    
+    if (!deleteIndex) {
+        this.status = 404;
+    } else {
+        configs.splice(deleteIndex, 1);
+        this.store.set('configurations', configs);
+    }
+
+    this.result = undefined;
 }
 
 function sortConfigsBy(key, order) {
