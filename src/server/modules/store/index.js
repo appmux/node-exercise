@@ -24,7 +24,7 @@ export function factory(sm) {
         this.resetStore();
     }
 
-    setTimeout(() => {
+    setInterval(() => {
         if (this.dirty) this.save();
     }, 5000);
 
