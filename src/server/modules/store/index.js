@@ -8,21 +8,46 @@ export { getRoutes };
 
 export function factory(sm) {
     this.config = config;
-
     this.storePath = this.config.storePath || __dirname + '/store.json';
-    this.store = require(this.storePath);
-
-    this.dirty = false;
+    this.dirty = true;
 
     this.get = get;
     this.set = set;
     this.save = save;
     this.resetAction = resetAction;
+    this.resetStore = resetStore;
+
+    if (fs.existsSync(this.storePath)) {
+        this.store = require(this.storePath);
+        this.dirty = false;
+    } else {
+        this.resetStore();
+    }
+
+    setTimeout(() => {
+        if (this.dirty) this.save();
+    }, 5000);
 
     return this;
 }
 
 function resetAction(req) {
+    this.resetStore();
+    this.save();
+}
+
+function get(key) {
+    return this.store[key];
+}
+
+function set(key, value) {
+    this.store[key] = value;
+    this.dirty = true;
+
+    return this;
+}
+
+function resetStore() {
     let configs = [];
 
     while (configs.length < this.config.numberOfConfigs) {
@@ -48,19 +73,6 @@ function resetAction(req) {
 
     this.store = extend({}, this.config.store);
     this.store.configurations = configs;
-    
-    this.save();
-}
-
-function get(key) {
-    return this.store[key];
-}
-
-function set(key, value) {
-    this.store[key] = value;
-    this.dirty = true;
-    
-    return this;
 }
 
 function save() {
