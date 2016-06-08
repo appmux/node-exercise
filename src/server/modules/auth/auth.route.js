@@ -2,7 +2,7 @@
 export default function getRoutes() {
     return [
         {
-            url: '/auth',
+            url: '/auth/token',
             action: 'token',
             data: {
                 test: 'some data'
