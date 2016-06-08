@@ -9,24 +9,32 @@ export default function getRoutes() {
             }
         },
         {
-            url: '/configurations',
-            method: 'POST',
-            action: 'post',
+            url: '/configurations/:host',
+            action: 'details',
             data: {
                 authenticate: true
             }
         },
         {
             url: '/configurations',
-            method: 'PUT',
-            action: 'put',
+            method: 'POST',
+            action: 'create',
             data: {
                 authenticate: true
             }
         },
         {
             url: '/configurations/:host',
-            action: 'details',
+            method: 'PUT',
+            action: 'update',
+            data: {
+                authenticate: true
+            }
+        },
+        {
+            url: '/configurations/:host',
+            method: 'DELETE',
+            action: 'delete',
             data: {
                 authenticate: true
             }
