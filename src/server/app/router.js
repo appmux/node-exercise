@@ -5,10 +5,10 @@ import { _extend as extend } from 'util';
 export function configure(config) {
     this.basePath = config.basePath || '';
     this.routes = [];
-    
+
     this.addRoutes = addRoutes;
     this.match = match;
-    
+
     return this;
 }
 
@@ -26,23 +26,23 @@ function addRoutes(routes) {
 }
 
 function match(req) {
-    const i = req.url.indexOf(this.basePath);
-    
+    const i = req.url.pathname.indexOf(this.basePath);
+
     if (i !== 0) {
         return;
     }
-    
-    const url = req.url.substr(this.basePath.length);
+
+    const path = req.url.pathname.substr(this.basePath.length);
 
     let params = {},
         matched = this.routes.find((route) => {
             const method = route.method || 'GET';
 
-            if (url === route.url && method === req.method) {
+            if (path === route.url && method === req.method) {
                 return true;
             }
 
-            let reMatch = url.match(route._urlRegex);
+            let reMatch = path.match(route._urlRegex);
 
             if (reMatch && method === req.method) { // && method === ''
                 params = route._urlParams.reduce((params, param, i) => {

@@ -1,6 +1,7 @@
 'use strict';
 
 import http from 'http';
+import url from 'url';
 import { _extend as extend } from 'util';
 import * as dispatcher from './dispatcher';
 import * as router from './router';
@@ -9,7 +10,7 @@ import * as serviceManager from './serviceManager';
 export function configure(config) {
     this.config = config;
     this.router = router.configure(config);
-    
+
     this.run = run;
     this.loadModules = loadModules;
 
@@ -23,6 +24,9 @@ function run() {
     this.loadModules();
 
     http.createServer((req, res) => {
+        req.url = url.parse('http://' + req.headers.host + req.url, true);
+        req.query = req.url.query;
+
         let matchedRoute = this.router.match(req);
         let result = '';
         let status = this.config.defaults.response.status;
@@ -39,10 +43,11 @@ function run() {
             req.params = matchedRoute.params;
 
             if (typeof module[action] === 'function') {
-                result = module[action](req, res);
+                module[action](req, res);
+                result = module['result'] || '';
+                status = module['status'] || 200;
             }
 
-            status = 200;
             headers = extend(headers, matchedRoute.headers || {});
         }
 
