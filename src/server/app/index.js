@@ -1,9 +1,9 @@
 'use strict';
 
+import * as events from 'events';
 import http from 'http';
 import url from 'url';
 import { _extend as extend } from 'util';
-import * as dispatcher from './dispatcher';
 import * as router from './router';
 import * as serviceManager from './serviceManager';
 
@@ -18,15 +18,16 @@ export function configure(config) {
 }
 
 function run() {
+    let eventManager = new events.EventEmitter();
+    
     serviceManager.register('appConfig', this.config);
-    serviceManager.register('dispatcher', dispatcher);
+    serviceManager.register('eventManager', eventManager);
 
     this.loadModules();
 
     http.createServer((req, res) => {
         req.url = url.parse('http://' + req.headers.host + req.url, true);
         req.query = req.url.query;
-
         res.statusCode = this.config.defaults.response.statusCode;
 
         let matchedRoute = this.router.match(req);
@@ -34,8 +35,10 @@ function run() {
             'Content-Type': 'text/plain'
         }, this.config.defaults.response.headers);
 
-        if (typeof matchedRoute !== 'undefined') {
-            dispatcher.dispatch('onRoute', req, res, matchedRoute);
+        eventManager.emit('requestStart', req, res);
+
+        if (!req.terminate && typeof matchedRoute !== 'undefined') {
+            eventManager.emit('route', req, res, matchedRoute);
 
             headers = extend(headers, matchedRoute.headers || {});
             Object.keys(headers).map(name => res.setHeader(name, headers[name]));
