@@ -11,7 +11,7 @@
     ],
     "defaults": {
         "response": {
-            "status": 400,
+            "statusCode": 200,
             "headers": {
                 "Content-Type": "application/json"
             }
