@@ -27,15 +27,18 @@ function run() {
         req.url = url.parse('http://' + req.headers.host + req.url, true);
         req.query = req.url.query;
 
+        res.statusCode = this.config.defaults.response.statusCode;
+
         let matchedRoute = this.router.match(req);
-        let result = '';
-        let status = this.config.defaults.response.status;
         let headers = extend({
             'Content-Type': 'text/plain'
         }, this.config.defaults.response.headers);
 
         if (typeof matchedRoute !== 'undefined') {
             dispatcher.dispatch('onRoute', req, res, matchedRoute);
+
+            headers = extend(headers, matchedRoute.headers || {});
+            Object.keys(headers).map(name => res.setHeader(name, headers[name]));
 
             let module = serviceManager.get(matchedRoute.module);
             let action = matchedRoute.action + 'Action';
@@ -44,15 +47,10 @@ function run() {
 
             if (typeof module[action] === 'function') {
                 module[action](req, res);
-                result = module['result'] || '';
-                status = module['status'] || 200;
             }
-
-            headers = extend(headers, matchedRoute.headers || {});
         }
 
-        res.writeHead(status, headers);
-        res.end(result);
+        res.end(res.body || '');
 
     }).listen(this.config.port, this.config.address);
 
