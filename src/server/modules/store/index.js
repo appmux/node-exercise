@@ -1,14 +1,14 @@
 
 import fs from 'fs';
-import getRoutes from './store.route.js';
-import config from './store.config.json';
 import { _extend as extend } from 'util';
+import getRoutes from './store.route.js';
+import configuraiton from './store.config.json';
 
 export { getRoutes };
 
 export function factory(sm) {
-    this.config = config;
-    this.storePath = this.config.storePath || __dirname + '/store.json';
+    this.configuraiton = configuraiton;
+    this.storePath = this.configuraiton.storePath || __dirname + '/store.json';
     this.dirty = true;
 
     this.get = get;
@@ -50,11 +50,11 @@ function set(key, value) {
 function resetStore() {
     let configs = [];
 
-    while (configs.length < this.config.numberOfConfigs) {
+    while (configs.length < this.configuraiton.numberOfConfigs) {
         let host = (
-            this.config.names[Math.floor(Math.random() * this.config.names.length)] + '-' +
-            this.config.colors[Math.floor(Math.random() * this.config.colors.length)] + '.' +
-            this.config.domains[Math.floor(Math.random() * this.config.domains.length)]
+            this.configuraiton.names[Math.floor(Math.random() * this.configuraiton.names.length)] + '-' +
+            this.configuraiton.colors[Math.floor(Math.random() * this.configuraiton.colors.length)] + '.' +
+            this.configuraiton.domains[Math.floor(Math.random() * this.configuraiton.domains.length)]
         ).toLowerCase();
 
         if (!configs[host]) {
@@ -71,7 +71,7 @@ function resetStore() {
         }
     });
 
-    this.store = extend({}, this.config.store);
+    this.store = extend({}, this.configuraiton.store);
     this.store.configurations = configs;
 }
 
