@@ -16,8 +16,8 @@ export function factory(sm) {
     eventManager.on('requestStart', onRequestStart);
 
     this.tokenAction = tokenAction;
-    this.refreshTokenAction = refreshTokenAction;
-    this.logOut = logOut;
+    this.validateAction = validateAction;
+    this.logOutAction = logOutAction;
 
     return this;
 }
@@ -49,15 +49,7 @@ function tokenAction(req, res) {
         } else {
             res.statusCode = 404;
         }
-    } else {
-        res.statusCode = 404;
-    }
-}
-
-function refreshTokenAction(req, res) {
-    let params = querystring.parse(req.body);
-
-    if (
+    } else if (
         params &&
         params.grant_type === 'refresh_token' &&
         typeof params.refresh_token === 'string'
@@ -87,12 +79,22 @@ function refreshTokenAction(req, res) {
         } else {
             res.statusCode = 404;
         }
+    } else {
+        res.statusCode = 404;
     }
 }
 
-function logOut(req, res) {
-    console.log('logOut');
+function validateAction(req, res) {
+    let token = tokens.find(token =>
+        token.data.access_token === (req.headers.authorization || '').substr('BEARER '.length)
+    );
 
+    if (!token) {
+        this.statusCode = 401;
+    }
+}
+
+function logOutAction(req, res) {
     let tokenIndex;
     let token = tokens.find((token, i) => {
         if (token.data.access_token === (req.headers.authorization || '').substr('BEARER '.length)) {

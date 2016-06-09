@@ -7,13 +7,19 @@ export default function getRoutes() {
             method: 'POST'
         },
         {
-            url: '/auth/refresh-token',
-            action: 'refreshToken',
-            method: 'POST'
+            url: '/auth/token',
+            action: 'logOut',
+            method: 'DELETE',
+            data: {
+                authenticate: true
+            }
         },
         {
-            url: '/auth/refresh-token',
-            action: 'logOut'
+            url: '/auth/valid-token',
+            action: 'validate',
+            data: {
+                authenticate: true
+            }
         }
     ];
 }
