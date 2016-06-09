@@ -4,9 +4,16 @@ export default function getRoutes() {
         {
             url: '/auth/token',
             action: 'token',
-            data: {
-                test: 'some data'
-            }
+            method: 'POST'
+        },
+        {
+            url: '/auth/refresh-token',
+            action: 'refreshToken',
+            method: 'POST'
+        },
+        {
+            url: '/auth/refresh-token',
+            action: 'logOut'
         }
     ];
 }
