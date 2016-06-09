@@ -18,52 +18,60 @@ export function configure(config) {
 }
 
 function run() {
-    let eventManager = new events.EventEmitter();
-    
-    serviceManager.register('appConfig', this.config);
-    serviceManager.register('eventManager', eventManager);
+    this.eventManager = new events.EventEmitter();
+
+    this.serviceManager = serviceManager;
+    this.serviceManager.register('appConfig', this.config);
+    this.serviceManager.register('eventManager', this.eventManager);
 
     this.loadModules();
 
-    http.createServer((req, res) => {
-        req.url = url.parse('http://' + req.headers.host + req.url, true);
-        req.query = req.url.query;
-        res.statusCode = this.config.defaults.response.statusCode;
-
-        let matchedRoute = this.router.match(req);
-        let headers = extend({
-            'Content-Type': 'text/plain'
-        }, this.config.defaults.response.headers);
-
-        eventManager.emit('requestStart', req, res);
-
-        if (!req.terminate && typeof matchedRoute !== 'undefined') {
-            eventManager.emit('route', req, res, matchedRoute);
-
-            headers = extend(headers, matchedRoute.headers || {});
-            Object.keys(headers).map(name => res.setHeader(name, headers[name]));
-
-            let module = serviceManager.get(matchedRoute.module);
-            let action = matchedRoute.action + 'Action';
-
-            req.params = matchedRoute.params;
-
-            if (typeof module[action] === 'function') {
-                module[action](req, res);
-            }
-        }
-
-        res.end(res.body || '');
-
-    }).listen(this.config.port, this.config.address);
+    http
+        .createServer((req, res) => {
+            req.body = '';
+            req
+                .on('data', chunk => req.body += chunk)
+                .on('end', () => handleRequest.call(this, req, res));
+        })
+        .listen(this.config.port, this.config.address);
 
     console.log('Server running at http://' + this.config.address + ':' + this.config.port + '/');
+}
+
+function handleRequest(req, res) {
+    req.url = url.parse('http://' + req.headers.host + req.url, true);
+    req.query = req.url.query;
+    res.statusCode = this.config.defaults.response.statusCode;
+
+    let matchedRoute = this.router.match(req);
+    let headers = extend({
+        'Content-Type': 'text/plain'
+    }, this.config.defaults.response.headers);
+
+    this.eventManager.emit('requestStart', req, res, matchedRoute);
+
+    if (!req.terminate && typeof matchedRoute !== 'undefined') {
+
+        headers = extend(headers, matchedRoute.headers || {});
+        Object.keys(headers).map(name => res.setHeader(name, headers[name]));
+
+        let module = this.serviceManager.get(matchedRoute.module);
+        let action = matchedRoute.action + 'Action';
+
+        req.params = matchedRoute.params;
+
+        if (typeof module[action] === 'function') {
+            module[action](req, res);
+        }
+    }
+
+    res.end(res.body || '');
 }
 
 function loadModules() {
     let modules = Array.isArray(this.config.modules) ? this.config.modules : [];
 
-    modules.map((name) => {
+    modules.map(name => {
         let module = require((this.config.modulesDir || '.') + '/' + name);
 
         if (typeof module.getRoutes === 'function') {
@@ -74,9 +82,9 @@ function loadModules() {
         }
 
         if (typeof module.factory === 'function') {
-            module = module.factory(serviceManager);
+            module = module.factory(this.serviceManager);
         }
 
-        serviceManager.register(name, module);
+        this.serviceManager.register(name, module);
     });
 }

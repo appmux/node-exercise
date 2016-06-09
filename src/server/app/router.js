@@ -35,7 +35,7 @@ function match(req) {
     const path = req.url.pathname.substr(this.basePath.length);
 
     let params = {},
-        matched = this.routes.find((route) => {
+        matched = this.routes.find(route => {
             const method = route.method || 'GET';
 
             if (path === route.url && method === req.method) {
