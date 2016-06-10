@@ -23,7 +23,6 @@ export function factory(sm) {
 function indexAction(req, res) {
     // TODO This definitely can be extracted into a generic pagination plugin.
     let configs = extend([], this.store.get('configurations') || []);
-    let host = req.url.protocol + '//' + req.url.host;
     let linksUrl = extend({}, req.url);
 
     let sortBy = ['hostname', 'port', 'username'].find(sortBy => sortBy === req.url.query.sortBy) || 'name';
@@ -34,7 +33,8 @@ function indexAction(req, res) {
     let pageIndexStart = page * this.configuration.itemsPerPage;
 
     let pager = {
-        total: pages,
+        items: configs.length,
+        pages: pages,
         current: page,
         next: page + 2 <= pages ? page + 2: undefined,
         previous: page > 0 ? page : undefined
@@ -102,16 +102,20 @@ function createAction(req, res) {
         if (!configs.find(config => config.name === source.name)) {
             configs.push(source);
             this.store.set('configurations', configs);
+
+            res.statusCode = 201;
+            res.setHeader('Location', req.url.href + '/' + source.name);
         } else {
-            errors.push('Configuration with name ' + source.name + ' already exists.');
+            errors.push('Configuration with name \'' + source.name + '\' already exists.');
+            res.statusCode = 409;
         }
     } else {
         errors.push('Configuration is malformed.');
+        res.statusCode = 400;
     }
 
     if (errors.length > 0) {
         res.body = formatErrors(errors);
-        res.statusCode = 400;
     }
 }
 
@@ -120,27 +124,34 @@ function updateAction(req, res) {
     let errors = [];
 
     if (source) {
-        if (source.name === req.params.name) {
-            let configs = extend([], this.store.get('configurations') || []);
-            configs.push(source);
-            this.store.set('configurations', configs);
+        let configs = extend([], this.store.get('configurations') || []);
+
+        if (configs.find(config => config.name === req.params.name)) {
+            if (source.name === req.params.name) {
+                configs.push(source);
+                this.store.set('configurations', configs);
+            } else {
+                errors.push('Must be a configuration with name ' + req.params.name + '.');
+                res.statusCode = 400;
+            }
         } else {
-            errors.push('Must be a configuration with name ' + req.params.name + '.');
+            errors.push('Configuration with name ' + req.params.name + ' not found.');
+            res.statusCode = 404;
         }
     } else {
-        errors.push('Configuration is malformed.');
+        errors.push('Configuration is malformed. Not all required fields are provided or contain bad data.');
+        res.statusCode = 400;
     }
 
     if (errors.length > 0) {
         res.body = formatErrors(errors);
-        res.statusCode = 400;
     }
 }
 
 function deleteAction(req, res) {
     let configs = extend([], this.store.get('configurations') || []);
     let deleteIndex;
-    
+
     configs.find((config, i) => {
         if (config.name == req.params.name) {
             deleteIndex = i;
@@ -148,8 +159,8 @@ function deleteAction(req, res) {
 
         return deleteIndex >= 0;
     });
-    
-    if (deleteIndex) {
+
+    if (deleteIndex >= 0) {
         configs.splice(deleteIndex, 1);
         this.store.set('configurations', configs);
     } else {
@@ -169,7 +180,7 @@ function sortConfigsBy(key, order) {
 
 function sanitizePayload(source) {
     try {
-        source = JSON.parse(req.body) || {};
+        source = JSON.parse(source);
     } catch (e) {
         source = {};
     }
