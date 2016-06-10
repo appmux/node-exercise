@@ -1,0 +1,20 @@
+{
+    "address": "127.0.0.1",
+    "port": 8090,
+    "basePath": "/api",
+    "modulesDir": "./../modules",
+    "modules": [
+        "store",
+        "core",
+        "auth",
+        "configurations"
+    ],
+    "defaults": {
+        "response": {
+            "statusCode": 200,
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    }
+}

@@ -1,0 +1,7 @@
+
+.idea/
+
+src/server/modules/store/store.json
+
+dist
+node_modules
