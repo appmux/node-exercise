@@ -31,9 +31,8 @@ export function factory(sm) {
     return this;
 }
 
-function resetAction(req) {
-    this.resetStore();
-    this.save();
+function resetAction(req, res) {
+    this.resetStore().save();
 }
 
 function get(key) {
@@ -73,6 +72,8 @@ function resetStore() {
 
     this.store = extend({}, this.configuraiton.store);
     this.store.configurations = configs;
+
+    return this;
 }
 
 function save() {

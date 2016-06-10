@@ -4,7 +4,10 @@ export default function getRoutes() {
         {
             url: '/store',
             method: 'DELETE',
-            action: 'reset'
+            action: 'reset',
+            data: {
+                authenticate: true
+            }
         }
     ];
 }
