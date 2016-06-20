@@ -2,6 +2,10 @@
     "address": "127.0.0.1",
     "port": 8090,
     "basePath": "/api",
+    "staticDirs": [
+        "./../../client",
+        "./../../../node_modules/"
+    ],
     "modulesDir": "./../modules",
     "modules": [
         "store",
