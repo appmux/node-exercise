@@ -11,7 +11,8 @@
         "store",
         "core",
         "auth",
-        "configurations"
+        "configurations",
+        "contacts"
     ],
     "defaults": {
         "response": {
