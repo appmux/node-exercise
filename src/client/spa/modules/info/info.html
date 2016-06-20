@@ -1,0 +1,84 @@
+<section>
+  <header class="section__header">
+    <div class="section__header--left">
+      <h2 class="section__title">External Contacts</h2>
+      <p class="section__description">Select the client contacts associated with this offer</p>
+    </div>
+
+    <div class="section__header--right">
+      <label class="checkbox__label">
+        <input type="checkbox" ng-model="InfoVm.isCollapsed"/>
+        <span class="section__expander__icon"
+              ng-class="{'section__expander__icon--collapsed': InfoVm.isCollapsed}"></span>
+        <span class="checkbox__label--unchecked" ng-if="!InfoVm.isCollapsed">Collapse</span>
+        <span class="checkbox__label--checked" ng-if="InfoVm.isCollapsed">Expand</span>
+      </label>
+    </div>
+  </header>
+
+  <main class="section__main" uib-collapse="InfoVm.isCollapsed">
+
+    <div class="table__border">
+      <table>
+        <thead>
+        <tr>
+          <th></th>
+          <th ng-repeat="item in InfoVm.columns">{{ item }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="contact in InfoVm.contacts">
+          <td>
+            <label class="checkbox__label">
+              <input type="checkbox"
+                     ng-click="InfoVm.selectedContact(contact.id)"
+                     ng_checked="InfoVm.selectedContacts.indexOf(contact.id) > -1"
+              />
+              <span class="checkbox__icon"></span>
+            </label>
+          </td>
+          <td>{{ contact.type }}</td>
+          <td>{{ contact.name }}</td>
+          <td>{{ contact.title }}</td>
+          <td>{{ contact.phone | phoneNumber }}</td>
+          <td>{{ contact.ext }}</td>
+          <td>{{ contact.fax | phoneNumber }}</td>
+          <td>{{ contact.email }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <button class="btn btn-primary" ng-click="InfoVm.addContact()">Add</button>
+      <button class="btn btn-primary" ng-click="InfoVm.removeContacts()" ng-if="InfoVm.selectedContacts.length > 0">
+        Remove
+      </button>
+    </div>
+  </main>
+</section>
+
+<script type="text/ng-template" id="addContact.html">
+  <div class="modal-header">
+    <h3 class="modal-title">Add a contact</h3>
+  </div>
+  <div class="modal-body">
+    <ul>
+      <li ng-repeat="item in items">
+        <a href="#" ng-click="$event.preventDefault(); selected.item = item">{{ item }}</a>
+      </li>
+    </ul>
+
+    <input type="text" class="form__contact--type" ng-model="data.type" placeholder="Type"/>
+    <input type="text" class="form__contact--name" ng-model="data.name" placeholder="Name"/>
+    <input type="text" class="form__contact--title" ng-model="data.title" placeholder="Title"/><br>
+    <input type="text" class="form__contact--phone" ng-model="data.phone" placeholder="Phone"/>
+    <input type="text" class="form__contact--ext" ng-model="data.ext" placeholder="Ext."/>
+    <input type="text" class="form__contact--fax" ng-model="data.fax" placeholder="Fax"/><br>
+    <input type="text" class="form__contact--email" ng-model="data.email" placeholder="Email"/>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+  </div>
+</script>
