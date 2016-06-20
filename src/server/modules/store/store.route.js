@@ -6,7 +6,7 @@ export default function getRoutes() {
             method: 'DELETE',
             action: 'reset',
             data: {
-                authenticate: true
+                // authenticate: true
             }
         }
     ];

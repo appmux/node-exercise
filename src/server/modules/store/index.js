@@ -16,6 +16,8 @@ export function factory(sm) {
     this.save = save;
     this.resetAction = resetAction;
     this.resetStore = resetStore;
+    this.generateConfigs = generateConfigs;
+    this.generateContacts = generateContacts;
 
     if (fs.existsSync(this.storePath)) {
         this.store = require(this.storePath);
@@ -47,33 +49,72 @@ function set(key, value) {
 }
 
 function resetStore() {
-    let configs = [];
-
-    while (configs.length < this.configuraiton.numberOfConfigs) {
-        let host = (
-            this.configuraiton.names[Math.floor(Math.random() * this.configuraiton.names.length)] + '-' +
-            this.configuraiton.colors[Math.floor(Math.random() * this.configuraiton.colors.length)] + '.' +
-            this.configuraiton.domains[Math.floor(Math.random() * this.configuraiton.domains.length)]
-        ).toLowerCase();
-
-        if (!configs[host]) {
-            configs.push(host);
-        }
-    }
-
-    configs = configs.map((config, i) => {
-        return {
-            name: 'host' + (1000 + i),
-            hostname: config,
-            port: Math.floor(Math.random() * 1000) + 1000,
-            username: config.replace(/\W/g, '')
-        }
-    });
-
     this.store = extend({}, this.configuraiton.store);
-    this.store.configurations = configs;
+    this.store.configurations = this.generateConfigs();
+    this.store.contacts = this.generateContacts();
 
     return this;
+}
+
+function generateConfigs() {
+  let conf = this.configuraiton,
+    items = [];
+
+  while (items.length < this.configuraiton.numberOfConfigs) {
+    let host = (
+      this.configuraiton.names[Math.floor(Math.random() * this.configuraiton.names.length)] + '-' +
+      this.configuraiton.colors[Math.floor(Math.random() * this.configuraiton.colors.length)] + '.' +
+      this.configuraiton.domains[Math.floor(Math.random() * this.configuraiton.domains.length)]
+    ).toLowerCase();
+
+    if (!items[host]) {
+      items.push(host);
+    }
+  }
+
+  items = items.map((config, i) => {
+    return {
+      name: 'host' + (1000 + i),
+      hostname: config,
+      port: Math.floor(Math.random() * 1000) + 1000,
+      username: config.replace(/\W/g, '')
+    }
+  });
+
+  return items;
+}
+
+function generateContacts() {
+  let conf = this.configuraiton,
+    items = [];
+
+  while (items.length < conf.numberOfContacts) {
+    let item = {};
+
+    item.id = items.length + 1001;
+
+    item.type = conf.types[Math.floor(Math.random() * conf.types.length)];
+
+    item.name = (
+      conf.names[Math.floor(Math.random() * conf.names.length)] + ' ' +
+      conf.colors[Math.floor(Math.random() * conf.colors.length)]
+    );
+
+    item.title = conf.titles[Math.floor(Math.random() * conf.titles.length)];
+
+    item.phone = Math.floor(Math.random() * 10000000000) + 10000000000;
+
+    item.ext = Math.floor(Math.random() * 1000);
+    item.ext = item.ext < 300 ? item.ext.toString() : '';
+
+    item.fax = item.phone + 1;
+
+    item.email = item.name.replace(' ', '.').toLowerCase() + '@example.com';
+
+    items.push(item);
+  }
+
+  return items;
 }
 
 function save() {

@@ -1,93 +1,117 @@
 {
-    "numberOfConfigs": 100,
-    "store": {
-        "users": [
-            {
-                "clientId": "CLIENT_ONE",
-                "secret": "e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4"
-            },
-            {
-                "clientId": "CLIENT_TWO",
-                "secret": "e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4"
-            }
-        ],
-        "configurations": [
-            {
-                "name": "",
-                "hostname": "",
-                "port": 0,
-                "username": ""
-            }
-        ]
-    },
-    "domains": ["com", "net", "org"],
-    "colors": [
-        "Red",
-        "Orange",
-        "Yellow",
-        "Green",
-        "Blue",
-        "Indigo",
-        "Violet",
-        "Purple",
-        "Magenta",
-        "Cyan",
-        "Pink",
-        "Brown",
-        "White",
-        "Gray",
-        "Black"
+  "numberOfConfigs": 100,
+  "numberOfContacts": 5,
+  "store": {
+    "users": [
+      {
+        "clientId": "CLIENT_ONE",
+        "secret": "e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4"
+      },
+      {
+        "clientId": "CLIENT_TWO",
+        "secret": "e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4"
+      }
     ],
-    "names": [
-        "Bonny",
-        "Sulema",
-        "Loriann",
-        "Renay",
-        "Lizzie",
-        "Darlene",
-        "Ivan",
-        "Bernadine",
-        "Lorrine",
-        "Aja",
-        "Christia",
-        "Forrest",
-        "Chante",
-        "Adele",
-        "Daryl",
-        "John",
-        "Logan",
-        "Errol",
-        "Carlton",
-        "Claretha",
-        "Leigh",
-        "Zona",
-        "Carolin",
-        "Sherrie",
-        "Cathrine",
-        "Lorine",
-        "Elvie",
-        "Israel",
-        "Lucas",
-        "Benton",
-        "Tanika",
-        "Wilfred",
-        "Jo",
-        "Veronica",
-        "Grayce",
-        "Adelaida",
-        "Shin",
-        "Shelley",
-        "Mari",
-        "Raquel",
-        "Adrian",
-        "Quintin",
-        "Obdulia",
-        "Jolanda",
-        "Lesli",
-        "Fred",
-        "Georgianna",
-        "Bernetta",
-        "Stefan",
-        "Miranda"
+    "configurations": [
+      {
+        "name": "",
+        "hostname": "",
+        "port": 0,
+        "username": ""
+      }
     ]
+  },
+  "domains": [
+    "com",
+    "net",
+    "org"
+  ],
+  "colors": [
+    "Red",
+    "Orange",
+    "Yellow",
+    "Green",
+    "Blue",
+    "Indigo",
+    "Violet",
+    "Purple",
+    "Magenta",
+    "Cyan",
+    "Pink",
+    "Brown",
+    "White",
+    "Gray",
+    "Black"
+  ],
+  "names": [
+    "Bonny",
+    "Sulema",
+    "Loriann",
+    "Renay",
+    "Lizzie",
+    "Darlene",
+    "Ivan",
+    "Bernadine",
+    "Lorrine",
+    "Aja",
+    "Christia",
+    "Forrest",
+    "Chante",
+    "Adele",
+    "Daryl",
+    "John",
+    "Logan",
+    "Errol",
+    "Carlton",
+    "Claretha",
+    "Leigh",
+    "Zona",
+    "Carolin",
+    "Sherrie",
+    "Cathrine",
+    "Lorine",
+    "Elvie",
+    "Israel",
+    "Lucas",
+    "Benton",
+    "Tanika",
+    "Wilfred",
+    "Jo",
+    "Veronica",
+    "Grayce",
+    "Adelaida",
+    "Shin",
+    "Shelley",
+    "Mari",
+    "Raquel",
+    "Adrian",
+    "Quintin",
+    "Obdulia",
+    "Jolanda",
+    "Lesli",
+    "Fred",
+    "Georgianna",
+    "Bernetta",
+    "Stefan",
+    "Miranda"
+  ],
+  "types": [
+    "Executive",
+    "AR",
+    "Monthly",
+    "Bi-weekly",
+    "Weekly",
+    "Daily",
+    "Other"
+  ],
+  "titles": [
+    "CEO",
+    "CTO",
+    "CFO",
+    "VP",
+    "Manager",
+    "Associate",
+    "Intern",
+    "Janitor"
+  ]
 }
