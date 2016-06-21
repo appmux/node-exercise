@@ -9,23 +9,27 @@ The application is written using:
 
 ## Quick Start
 
+Clone the repo
+```
+git clone https://github.com/appmux/node-exercise.git
+```
+Switch to project firectory
+```
+cd node-exercise
+```
+Checkout client branch
+```
+git checkout -b client origin/client
+```
 Install dependencies
-
 ```
 $ npm install
 ```
-
 Run application
-
 ```
 $ npm start
 ```
-
-# Features
-
-## Store
-
-### Store reset
+Generate database entries
 ```
 curl -X DELETE "http://127.0.0.1:8090/api/store"
 ```
